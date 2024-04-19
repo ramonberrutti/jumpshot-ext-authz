@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: jumpshot-ext-authz
+  name: jumpshot-ext-authz
+spec:
+  selector:
+    app: jumpshot-ext-authz
+  ports:
+  - name: grpc
+    port: 9090
+    targetPort: 9090
