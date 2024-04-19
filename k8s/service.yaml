@@ -5,6 +5,7 @@ metadata:
   namespace: jumpshot-ext-authz
   name: jumpshot-ext-authz
 spec:
+  clusterIP: None
   selector:
     app: jumpshot-ext-authz
   ports:
