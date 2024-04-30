@@ -5,12 +5,14 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/ramonberrutti/jumpshot-ext-authz/internal/server/auth"
 	"github.com/ramonberrutti/jumpshot-ext-authz/internal/storage"
 	"google.golang.org/grpc"
 
 	authpb "github.com/envoyproxy/go-control-plane/envoy/service/auth/v3"
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-middleware/providers/prometheus"
 )
 
 type Server interface {
@@ -55,14 +57,22 @@ type server struct {
 }
 
 func (s *server) Run(ctx context.Context) error {
-	srv := grpc.NewServer()
+	metrics := grpc_prometheus.NewServerMetrics(grpc_prometheus.WithServerHandlingTimeHistogram())
+	srv := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(
+			metrics.UnaryServerInterceptor(),
+		),
+	)
 
 	authpb.RegisterAuthorizationServer(srv, &auth.AuthorizationServiceServer{
 		Store: s.authStore,
 	})
 
-	mux := http.NewServeMux()
+	if err := prometheus.Register(metrics); err != nil {
+		return err
+	}
 
+	mux := http.NewServeMux()
 	mux.Handle("/metrics", promhttp.Handler())
 	mux.Handle("/healthz", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)

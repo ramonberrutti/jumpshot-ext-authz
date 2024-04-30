@@ -1,1 +1,17 @@
 ---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  namespace: jumpshot-ext-authz
+  name: jumpshot-ext-authz
+  labels:
+    release: prometheus 
+spec:
+  podMetricsEndpoints:
+  - interval: 15s
+    path: /metrics
+    port: metrics
+    scheme: http
+  selector:
+    matchLabels:
+      app: jumpshot-ext-authz
