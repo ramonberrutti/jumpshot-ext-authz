@@ -102,6 +102,13 @@ func (a *AuthorizationServiceServer) Check(ctx context.Context, req *authpb.Chec
 					},
 					&v31.HeaderValueOption{
 						Header: &v31.HeaderValue{
+							Key:   "x-user-name",
+							Value: m.User.Name,
+						},
+						Append: wrapperspb.Bool(false),
+					},
+					&v31.HeaderValueOption{
+						Header: &v31.HeaderValue{
 							Key:   "x-user",
 							Value: base64.StdEncoding.EncodeToString(userBinary),
 						},
