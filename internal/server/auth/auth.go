@@ -107,6 +107,13 @@ func (a *AuthorizationServiceServer) Check(ctx context.Context, req *authpb.Chec
 						},
 						Append: wrapperspb.Bool(false),
 					},
+					&v31.HeaderValueOption{
+						Header: &v31.HeaderValue{
+							Key:      "x-user-bin",
+							RawValue: userBinary,
+						},
+						Append: wrapperspb.Bool(false),
+					},
 				)
 			case *storagepb.Session_Client:
 				clientBinary, _ := proto.Marshal(m.Client)
